@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Library Home{% endblock %}</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'library/css/styles.css' %}">
+</head>
+<body bgcolor="#F4B525">
+    <header>
+        <nav class="navbar" style="background-color: #d3e018; text-align: center;">
+            <div class="container-fluid">
+                <span class="navbar-text" style="font-size: 24px; font-weight: bold;">
+                    LIBRARY
+                </span>
+            </div>
+        </nav>
+     
+        <nav>
+            <ul>
+                <li><a href="{% url 'home' %}">MY LIBRARY</a></li>
+                <li><a href="{% url 'book_list' %}">Books</a></li>
+                <li><a href="{% url 'admin:index' %}">Admin</a></li>
+                {% if user.is_authenticated %}
+                    <li><a href="{% url 'logout' %}">Logout</a></li>
+                {% else %}
+                    <li><a href="{% url 'login' %}">Login</a></li>
+                {% endif %}
+                <li><a href="{% url 'register' %}">New User</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        {% block content %}
+            <div class="welcome-content">
+                <h1>HELLO USER,</h1>
+                <img src="{% static '/pics/welcome.jpg '%}" alt="WELCOME" height="600" style="display: block; margin: 0 auto;">
+             </div>
+        {% endblock %}
+    </main>
+    <footer>
+        <p>&copy; 2024 My Library</p>
+    </footer>
+</body>
+</html>

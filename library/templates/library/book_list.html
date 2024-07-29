@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}My Library{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'library/css/styles.css' %}">
+</head>
+<body bgcolor="#F4B525">
+    <header>
+      <nav class="navbar" style="background-color: #d3e018; text-align: center;">
+        <div class="container-fluid">
+            <span class="navbar-text" style="font-size: 24px; font-weight: bold;">
+                OUR LIBRARY
+            </span>
+        </div>
+    </nav>
+        <nav>
+            <ul>
+                <li><a href="{% url 'home' %}">MY LIBRARY</a></li>
+                <li><a href="{% url 'book_list' %}">Books</a></li>
+                <li><a href="{% url 'admin:index' %}">Admin</a></li>
+                {% if user.is_authenticated %}
+                    <li><a href="{% url 'logout' %}">Logout</a></li>
+                {% else %}
+                    <li><a href="{% url 'login' %}">Login</a></li>
+                {% endif %}
+                <li><a href="{% url 'register' %}">New User</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        {% block content %}
+        <center>
+            <form class="form" id="searchform" action="{% url 'book_list' %}" method="get">
+                <div class="form-group">
+                    <input type="text" class="col-5 form-control-lg" placeholder="Enter book title or something" name="q"/>
+                    <button type="submit" class="btn btn-success form-control-lg">Search</button>
+                </div>
+            </form>
+        </center>
+        <h1>Book List</h1>
+
+        {% if book_list %}
+            <div class="row mx-auto">
+                {% for book in book_list %}
+                <div class="mx-3 col-md-4 col-lg-3 mb-4 shadow p-2 mb-4 bg-white rounded">
+                    <div class="card mx-auto text-center">
+                        <img class="card-img-top" src="{{ book.pic.url }}" alt="{{ book.title }}" height="400px" width="300px">
+                        <div class="card-body">
+                            <h2 class="card-title">
+                                <a href="{% url 'book_detail' book.pk %}">{{ book.title }}</a>
+                            </h2>
+                            <p class="card-author">{{ book.author }}</p>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="bg bg-white">There are no books.</p>
+        {% endif %}
+        {% endblock %}
+    </main>
+    <footer>
+        <p>&copy; 2024 My Library</p>
+    </footer>
+</body>
+</html>

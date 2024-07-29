@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ book.title }}</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'library/css/styles.css' %}">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <style>
+        .product-title, .product-description, .price, .vote, .sizes {
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body bgcolor="#F4B525">
+    <header>
+        <nav class="navbar" style="background-color: #d3e018; text-align: center;">
+            <div class="container-fluid">
+                <span class="navbar-text" style="font-size: 24px; font-weight: bold;">
+                    OUR LIBRARY
+                </span>
+            </div>
+        </nav>
+        <nav>
+            <ul>
+                <li><a href="{% url 'home' %}">MY LIBRARY</a></li>
+                <li><a href="{% url 'book_list' %}">Books</a></li>
+                <li><a href="{% url 'admin:index' %}">Admin</a></li>
+                {% if user.is_authenticated %}
+                    <li><a href="{% url 'logout' %}">Logout</a></li>
+                {% else %}
+                    <li><a href="{% url 'login' %}">Login</a></li>
+                {% endif %}
+                <li><a href="{% url 'register' %}">New User</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <div class="container bg bg-white">
+            <div class="container-fluid">
+                <div class="wrapper row">
+                    <div class="preview col-6">
+                        <div class="preview-pic tab-content">
+                            <div class="tab-pane active my-auto mx-auto" id="pic-1">
+                                {% if book.pic %}
+                                    <img src="{{ book.pic.url }}" height="500" width="400"/>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="details col-6">
+                        <h1>Title: {{ book.title }}</h1>
+                        <p><strong>Author:</strong> {{ book.author }}</p>
+                        <p><strong>Summary:</strong> {{ book.summary }}</p>
+                        <p><strong>ISBN:</strong> {{ book.isbn }}</p>
+                        <p><strong>Language:</strong> {{ book.language }}</p>
+                        <p><strong>Genre:</strong> {{ book.genre }}</p>
+                        <div style="margin-left:20px; margin-top:20px">
+                            <h4>Copies</h4>
+                            {% if user.is_superuser %}
+                                <a class="btn btn-danger" href="{% url 'book_delete' pk=book.id %}">DELETE</a>
+                                <a class="btn btn-success" href="{% url 'book_update' pk=book.id %}">Update</a>
+                            {% endif %}
+                            {% if book.available_copies %}
+                                <br>
+                                No of available copies = {{ book.available_copies }}<br>
+                                {% if user.is_authenticated %}
+                                    {% if not is_borrowed %}
+                                        <button id="issue-button" class="btn btn-primary" data-pk="{{ book.id }}">Issue</button>
+                                    {% else %}
+                                        <button id="return-button" class="btn btn-warning" data-pk="{{ book.id }}">Return</button>
+                                    {% endif %}
+                                {% else %}
+                                    <a class="btn btn-primary" href="{% url 'login' %}">Login to Issue</a>
+                                {% endif %}
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <footer>
+        <p>&copy; 2024 My Library</p>
+    </footer>
+
+    <script>
+        $(document).ready(function() {
+            $('#issue-button').click(function() {
+                var bookId = $(this).data('pk');
+
+                $.ajax({
+                    url: '{% url "borrow_book" pk=book.id %}'.replace('book.id', bookId),
+                    type: 'POST',
+                    data: {
+                        'csrfmiddlewaretoken': '{{ csrf_token }}'
+                    },
+                    success: function(response) {
+                        alert('Book issued successfully!');
+                        location.reload();
+                    },
+                    error: function(response) {
+                        console.error('Error response:', response);
+                        alert('Failed to issue book: ' + response.responseJSON.error);
+                    }
+                });
+            });
+
+            $('#return-button').click(function() {
+                var bookId = $(this).data('pk');
+
+                $.ajax({
+                    url: '{% url "return_book" pk=book.id %}'.replace('book.id', bookId),
+                    type: 'POST',
+                    data: {
+                        'csrfmiddlewaretoken': '{{ csrf_token }}'
+                    },
+                    success: function(response) {
+                        alert('Book returned successfully!');
+                        location.reload();
+                    },
+                    error: function(response) {
+                        console.error('Error response:', response);
+                        alert('Failed to return book: ' + response.responseJSON.error);
+                    }
+                });
+            });
+        });
+    </script>
+    
+    
+</body>
+</html>

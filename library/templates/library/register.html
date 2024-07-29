@@ -1,0 +1,44 @@
+{% extends "library/base.html" %}
+
+{% block title %}Register{% endblock %}
+
+{% block content %}
+    <h1>Register</h1>
+    <form action="{% url 'register' %}" method="post">
+        {% csrf_token %}
+        <label for="srn">SRN:</label>
+        <input type="text" name="srn" placeholder="SRN" required><br>
+
+        <label for="first_name">First Name:</label>
+        <input type="text" name="first_name" placeholder="First Name" required><br>
+
+        <label for="last_name">Last Name:</label>
+        <input type="text" name="last_name" placeholder="Last Name" required><br>
+
+        <label for="branch">Branch:</label>
+        <input type="text" name="branch" placeholder="Branch" required><br>
+
+        <label for="contact_no">Contact No:</label>
+        <input type="text" name="contact_no" placeholder="Contact No" required><br>
+
+        <label for="email">Email:</label>
+        <input type="email" name="email" placeholder="Email" required><br>
+
+        <label for="username">Username:</label>
+        <input type="text" name="username" placeholder="Username" required><br>
+
+        <label for="password1">Password:</label>
+        <input type="password" name="password1" placeholder="Password" required><br>
+
+        <label for="password2">Confirm Password:</label>
+        <input type="password" name="password2" placeholder="Confirm Password" required><br>
+
+        <input type="submit" value="Register">
+    </form>
+
+    <div>
+        {% for message in messages %}
+            <h3>{{ message }}</h3>
+        {% endfor %}
+    </div>
+{% endblock %}
